@@ -22,7 +22,6 @@ import org.gradle.api.GradleException
 import org.gradle.api.Project
 import org.gradle.process.ExecResult
 import org.gradle.process.ExecSpec
-import org.gradle.util.ConfigureUtil
 import org.jetbrains.kotlin.konan.target.*
 import org.jetbrains.kotlin.konan.file.*
 
@@ -72,10 +71,6 @@ class ExecClang(private val project: Project) {
         return this.execClang(emptyList<String>(), action)
     }
 
-    fun execBareClang(closure: Closure<in ExecSpec>): ExecResult {
-        return this.execClang(emptyList<String>(), closure)
-    }
-
     // The konan ones invoke clang with konan provided sysroots.
     // So they require a target or assume it to be the host.
     // The target can be specified as KonanTarget or as a
@@ -87,14 +82,6 @@ class ExecClang(private val project: Project) {
 
     fun execKonanClang(target: KonanTarget, action: Action<in ExecSpec>): ExecResult {
         return this.execClang(clangArgsForCppRuntime(target), action)
-    }
-
-    fun execKonanClang(target: String?, closure: Closure<in ExecSpec>): ExecResult {
-        return this.execClang(clangArgsForCppRuntime(target), closure)
-    }
-
-    fun execKonanClang(target: KonanTarget, closure: Closure<in ExecSpec>): ExecResult {
-        return this.execClang(clangArgsForCppRuntime(target), closure)
     }
 
     /**
@@ -116,20 +103,9 @@ class ExecClang(private val project: Project) {
         })
     }
 
-    /**
-     * @see execClangForCompilerTests
-     */
-    fun execClangForCompilerTests(target: KonanTarget, closure: Closure<in ExecSpec>): ExecResult =
-            execClangForCompilerTests(target, ConfigureUtil.configureUsing(closure))
-
     // The toolchain ones execute clang from the toolchain.
-
     fun execToolchainClang(target: String?, action: Action<in ExecSpec>): ExecResult {
         return this.execToolchainClang(platformManager.targetManager(target).target, action)
-    }
-
-    fun execToolchainClang(target: String?, closure: Closure<in ExecSpec>): ExecResult {
-        return this.execToolchainClang(platformManager.targetManager(target).target, ConfigureUtil.configureUsing(closure))
     }
 
     fun execToolchainClang(target: KonanTarget, action: Action<in ExecSpec>): ExecResult {
@@ -138,14 +114,6 @@ class ExecClang(private val project: Project) {
             executable = resolveToolchainExecutable(target, executable)
         }
         return project.exec(extendedAction)
-    }
-
-    fun execToolchainClang(target: KonanTarget, closure: Closure<in ExecSpec>): ExecResult {
-        return this.execToolchainClang(target, ConfigureUtil.configureUsing(closure))
-    }
-
-    private fun execClang(defaultArgs: List<String>, closure: Closure<in ExecSpec>): ExecResult {
-        return this.execClang(defaultArgs, ConfigureUtil.configureUsing(closure))
     }
 
     private fun execClang(defaultArgs: List<String>, action: Action<in ExecSpec>): ExecResult {

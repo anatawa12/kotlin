@@ -26,7 +26,6 @@ import org.gradle.api.plugins.BasePlugin
 import org.gradle.api.plugins.ExtensionAware
 import org.gradle.api.publish.maven.MavenPom
 import org.gradle.api.tasks.TaskProvider
-import org.gradle.util.ConfigureUtil
 import org.jetbrains.kotlin.gradle.plugin.tasks.KonanBuildingTask
 import org.jetbrains.kotlin.konan.target.KonanTarget
 import java.io.File
@@ -171,8 +170,6 @@ abstract class KonanBuildingConfig<T : KonanBuildingTask>(
             }
         }
 
-    override fun libraries(closure: Closure<Unit>) =
-        tasks().forEach { it.configure { libraries(closure) } }
 
     override fun libraries(action: Action<KonanLibrariesSpec>) =
         tasks().forEach { it.configure { libraries(action) } }
@@ -213,9 +210,6 @@ abstract class KonanBuildingConfig<T : KonanBuildingTask>(
 
     fun target(targetString: String, configureAction: Action<T>) =
         target(targetString) { configureAction.execute(this) }
-
-    fun target(targetString: String, configureAction: Closure<Unit>) =
-        target(targetString, ConfigureUtil.configureUsing(configureAction))
 
     fun pom(action: Action<MavenPom>) = pomActions + action
 }

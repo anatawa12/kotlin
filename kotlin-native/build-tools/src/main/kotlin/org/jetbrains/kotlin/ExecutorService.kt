@@ -22,7 +22,6 @@ import org.gradle.api.Action
 import org.gradle.api.Project
 import org.gradle.process.ExecResult
 import org.gradle.process.ExecSpec
-import org.gradle.util.ConfigureUtil
 import org.jetbrains.kotlin.konan.target.*
 
 import java.io.*
@@ -38,7 +37,6 @@ import java.util.concurrent.TimeUnit
  * @see org.gradle.api.Project.exec
  */
 interface ExecutorService {
-    fun execute(closure: Closure<in ExecSpec>): ExecResult? = execute(ConfigureUtil.configureUsing(closure))
     fun execute(action: Action<in ExecSpec>): ExecResult?
 }
 
@@ -141,7 +139,7 @@ fun runProcessWithInput(executor: (Action<in ExecSpec>) -> ExecResult?,
  * @throws IllegalStateException if there are no executor in the project.
  */
 val Project.executor: ExecutorService
-    get() = this.convention.plugins["executor"] as? ExecutorService
+    get() = this.extensions.findByName("executor") as? ExecutorService
             ?: throw IllegalStateException("Executor wasn't found")
 
 /**

@@ -25,7 +25,6 @@ interface KonanArtifactSpec {
 }
 
 interface KonanArtifactWithLibrariesSpec: KonanArtifactSpec {
-    fun libraries(closure: Closure<Unit>)
     fun libraries(action: Action<KonanLibrariesSpec>)
     fun libraries(configure: KonanLibrariesSpec.() -> Unit)
 
@@ -99,7 +98,6 @@ interface KonanInteropSpec: KonanBuildingSpec {
 
     fun includeDirs(vararg values: Any)
 
-    fun includeDirs(closure: Closure<Unit>)
     fun includeDirs(action: Action<IncludeDirectoriesSpec>)
     fun includeDirs(configure: IncludeDirectoriesSpec.() -> Unit)
 
