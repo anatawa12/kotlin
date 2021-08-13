@@ -197,9 +197,11 @@ class FunctionDescriptorResolver(
             }
 
         val contextReceivers = function.contextReceivers
-        val contextReceiverTypes = contextReceivers.mapNotNull { it.typeReference() }.map {
-            typeResolver.resolveType(headerScope, it, trace, true)
-        }
+        val contextReceiverTypes =
+            if (function is KtFunctionLiteral) expectedFunctionType.getContextReceiverTypesFromFunctionType()
+            else contextReceivers
+                .mapNotNull { it.typeReference() }
+                .map { typeResolver.resolveType(headerScope, it, trace, true) }
 
         val valueParameterDescriptors =
             createValueParameterDescriptors(function, functionDescriptor, headerScope, trace, expectedFunctionType, inferenceSession)
